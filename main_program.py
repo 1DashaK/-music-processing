@@ -9,6 +9,10 @@ class MyFirstProgram(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.start = 0
+
+        self.end = 0
+
         self.on_the_edge = False
 
         self.setGeometry(300, 300, 900, 600)  # создаю поле программы
@@ -31,7 +35,6 @@ class MyFirstProgram(QWidget):
         self.file_input.move(135, 60)
 
         self.start_label = QLabel(self)
-        self.start_label.setStyleSheet('QPushButton {background-color: #A3C1DA; color: red;}')
         self.start_label.setText("Введите секунду, с которой надо обрезать: ")
         self.start_label.move(70, 90)
 
@@ -72,6 +75,11 @@ class MyFirstProgram(QWidget):
         self.play_m.clicked.connect(self.music)
 
         self.wrong_file = QLabel(self)
+        self.wrong_file.setStyleSheet("color:rgb(248, 248, 248)")
+        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
+        self.wrong_file.move(400, 60)
+
+        self.song = 0
 
     def change(self):  # эта функция меняет то, что я буду удалять.
         self.on_the_edge = True if not self.on_the_edge else False
@@ -86,19 +94,43 @@ class MyFirstProgram(QWidget):
 
     def music(self):
         try:
-            file_name = self.file_input.text()
-            self.song = AudioSegment.from_mp3(file_name)
+            if self.song == 0:
+                file_name = self.file_input.text()
+                self.song = AudioSegment.from_mp3(file_name)
+                self.end = len(self.song)
+            song = self.cut(self.song)
             while True:
                 try:
-                    play(self.song)
+                    play(song)
                 except KeyboardInterrupt:
+                    break
+                except Exception:
+                    self.wrong_f()
                     break
         except Exception:
             self.wrong_f()
 
     def wrong_f(self):
-        self.wrong_file.setText('Файл не найден. Повторите ввод')
+        self.wrong_file.setStyleSheet("color:rgb(0, 0, 0)")
+        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
         self.wrong_file.move(400, 60)
+
+    def cut(self, song):
+
+        if self.sender().text() == 'Играть':
+            self.start = int(self.m_input.text()) * 1000
+            self.end = int(self.mus_input.text()) * 1000
+            self.song = song[self.start:self.end]
+            return self.song
+
+        self.start = int(self.start_input.text()) * 1000
+        self.end = int(self.end_input.text()) * 1000
+
+        if self.on_the_edge:
+            song = song[self.start:self.end]
+        else:
+            song = song[:self.start] + song[self.end:]
+        return song
 
 
 if __name__ == '__main__':
