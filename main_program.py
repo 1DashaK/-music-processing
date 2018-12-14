@@ -8,26 +8,25 @@ from PyQt5.QtWidgets import QLabel, QLineEdit
 class MyFirstProgram(QWidget):
     def __init__(self):
         super().__init__()
-        self.initUI()
+
         self.on_the_edge = False
 
-    def initUI(self):
-        self.setGeometry(300, 300, 900, 600)
+        self.setGeometry(300, 300, 900, 600)  # создаю поле программы
         self.setWindowTitle('Музыкальный редактор')
 
-        self.btn = QPushButton('Обрезать по краям или то, что внутри', self)
-        self.btn.resize(self.btn.sizeHint())
+        self.btn = QPushButton('Обрезать по краям или то, что внутри', self)  # создается кнопка, с помощью которой
+        self.btn.resize(self.btn.sizeHint())  # можно выбрать то, что именно надо вырезать (концы или середину)
         self.btn.move(70, 150)
         self.btn.clicked.connect(self.change)
 
-        self.label = QLabel(self)
+        self.label = QLabel(self)  # создается строка, которая показывает, что именно вырезается в данный момент
+        self.label.setStyleSheet("background-color:rgb(239, 255, 60)")
         self.label.setText("Я обрезаю то, что внутри")
         self.label.move(70, 30)
 
-        self.file = QLabel(self)
+        self.file = QLabel(self)  # создается строка, в которую будет вписано название файла
         self.file.setText("Путь до файла:")
         self.file.move(40, 60)
-
         self.file_input = QLineEdit(self)
         self.file_input.move(135, 60)
 
@@ -58,38 +57,48 @@ class MyFirstProgram(QWidget):
         self.m_input.move(145, 200)
 
         self.m_middle = QLabel(self)
-        self.m_middle.setText('секунд(ы) по ')
+        self.m_middle.setText('секунды по ')
         self.m_middle.move(285, 200)
 
         self.mus_input = QLineEdit(self)
         self.mus_input.move(365, 200)
 
         self.m_end = QLabel(self)
-        self.m_end.setText('секунд(у)')
+        self.m_end.setText('секунду')
         self.m_end.move(505, 200)
 
         self.play_m = QPushButton('Играть', self)
         self.play_m.move(563, 199)
         self.play_m.clicked.connect(self.music)
 
+        self.wrong_file = QLabel(self)
+
     def change(self):  # эта функция меняет то, что я буду удалять.
         self.on_the_edge = True if not self.on_the_edge else False
         if not self.on_the_edge:  # либо я буду удалять то, что снаружи,
-            self.label.setText('Я обрезаю по краям')
+            self.label.setText('Я обрезаю то, что внутри')
             self.start_label.setText("Введите секунду, с которой надо обрезать: ")
             self.end_label.setText("Введите секунду, по которою надо обрезать: ")
         else:  # либо то, что внутри
-            self.label.setText('Я обрезаю то, что внутри')
+            self.label.setText('Я обрезаю по краям')
             self.start_label.setText("Введите секунду, по которою надо обрезать: ")
             self.end_label.setText("Введите секунду, с которой надо обрезать: ")
 
     def music(self):
-        self.song = AudioSegment.from_mp3(self.file_name)
-        while True:
-            try:
-                play(self.song)
-            except KeyboardInterrupt:
-                break
+        try:
+            file_name = self.file_input.text()
+            self.song = AudioSegment.from_mp3(file_name)
+            while True:
+                try:
+                    play(self.song)
+                except KeyboardInterrupt:
+                    break
+        except Exception:
+            self.wrong_f()
+
+    def wrong_f(self):
+        self.wrong_file.setText('Файл не найден. Повторите ввод')
+        self.wrong_file.move(400, 60)
 
 
 if __name__ == '__main__':
