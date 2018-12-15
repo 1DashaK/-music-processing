@@ -32,10 +32,11 @@ class MyFirstProgram(QWidget):
         self.file = QLabel(self)  # создается строка, в которую будет вписано название файла
         self.file.setText("Путь до файла:")
         self.file.move(40, 60)
+
         self.file_input = QLineEdit(self)
         self.file_input.move(135, 60)
 
-        self.start_label = QLabel(self)
+        self.start_label = QLabel(self)  # вводятся секунды, по которым надо обрезать
         self.start_label.setText("Введите секунду, с которой надо обрезать: ")
         self.start_label.move(70, 90)
 
@@ -49,11 +50,11 @@ class MyFirstProgram(QWidget):
         self.end_input = QLineEdit(self)
         self.end_input.move(340, 120)
 
-        self.music_button = QPushButton('Воспроизвести то, что получилось', self)
+        self.music_button = QPushButton('Воспроизвести то, что получилось', self)  # кнопка воспроизведения
         self.music_button.move(320, 150)
         self.music_button.clicked.connect(self.music)
 
-        self.m_start = QLabel(self)
+        self.m_start = QLabel(self)  # воспроизведение с определенного момента до определенного
         self.m_start.setText('Воспроизвести с ')
         self.m_start.move(40, 200)
 
@@ -75,25 +76,25 @@ class MyFirstProgram(QWidget):
         self.play_m.move(563, 199)
         self.play_m.clicked.connect(self.music)
 
-        self.wrong_file = QLabel(self)
-        self.wrong_file.setStyleSheet("color:rgb(246, 246, 246)")
+        self.wrong_file = QLabel(self)  # строка ошибки связанной с вовпроизведением файла
+        self.wrong_file.setStyleSheet("color:rgb(246, 246, 246)")  # делает эту строку невидимой (изменяет цвет)
         self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
         self.wrong_file.move(400, 60)
 
         self.song = 0  # переменная, у которой, если значение 0, то значит, что надо считать название файла
         # иначе не надо
 
-        self.wrong_start = QLabel(self)
+        self.wrong_start = QLabel(self)  # ошибка, сообщающая что проблема с секундами
         self.wrong_start.setStyleSheet("color:rgb(246, 246, 246)")
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
         self.wrong_start.move(40, 250)
 
-        self.wrong_ind = QLabel(self)
+        self.wrong_ind = QLabel(self)  # проблема, сообщающая, что конец находится за песней
         self.wrong_ind.setStyleSheet("color:rgb(246, 246, 246)")
         self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные.')
         self.wrong_ind.move(445, 250)
 
-        self.save_music = QPushButton('Сохранить изменения', self)
+        self.save_music = QPushButton('Сохранить изменения', self)  # сохранение изменений
         self.save_music.move(500, 290)
         self.save_music.clicked.connect(self.save)
 
@@ -117,15 +118,25 @@ class MyFirstProgram(QWidget):
 
     def temp_change(self):
         try:
-            change_t = int(self.change_Edit.text())
+            speed = int(self.change_Edit.text())
+            if self.song == 0:
+                file_name = self.file_input.text()
+                self.song = AudioSegment.from_mp3(file_name)
+            self.song = self.song._spawn(self.song.raw_data,
+                                                      overrides={"frame_rate": int(self.song.frame_rate * speed)})
         except ValueError:
             self.wrong_start_or_end()
         except TypeError:
             self.wrong_start_or_end()
+        except Exception:
+            self.wrong_f()
 
-    def save(self):
+    def save(self):  # функция сохранения
         try:
             file_name = self.mus_save.text()
+            if self.song == 0:
+                file_name1 = self.file_input.text()
+                self.song = AudioSegment.from_mp3(file_name1)
             self.song.export(file_name, format='mp3')
         except Exception:
             self.wrong_f()
@@ -143,7 +154,7 @@ class MyFirstProgram(QWidget):
 
     def music(self):  # воспроизведение музыки
         try:
-            if self.song == 0:
+            if self.song == 0:  # если еще не считывали файл с песней
                 file_name = self.file_input.text()
                 self.song = AudioSegment.from_mp3(file_name)
                 self.end = len(self.song)
@@ -175,13 +186,13 @@ class MyFirstProgram(QWidget):
         self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
         self.wrong_file.move(400, 60)
 
-    def cut(self, song):
+    def cut(self, song):  # функция обрезки музыки, в соответствии заданным параметрам
         try:
 
             if self.sender().text() == 'Играть':
                 self.start = int(self.m_input.text()) * 1000
                 self.end = int(self.mus_input.text()) * 1000
-                if self.start > self.end:
+                if self.start > self.end or self.end > len(song):
                     raise ValueError
                 song = song[self.start:self.end]
                 return song
@@ -190,7 +201,7 @@ class MyFirstProgram(QWidget):
             self.end = int(self.end_input.text()) * 1000
 
             if self.on_the_edge:
-                if self.start > self.end:
+                if self.start > self.end or self.end > len(song):
                     raise ValueError
                 self.song = song[self.start:self.end]
             else:
@@ -203,7 +214,7 @@ class MyFirstProgram(QWidget):
         except IndexError:
             self.wrong_index()
 
-    def wrong_start_or_end(self):
+    def wrong_start_or_end(self):  # функция, выводящая ошибку, если что-то не так с секундами
         self.wrong_start.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
         self.wrong_start.setStyleSheet("background-color:rgb(255, 68, 68)")
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
@@ -217,7 +228,7 @@ class MyFirstProgram(QWidget):
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
         self.wrong_start.move(40, 235)
 
-    def wrong_index(self):
+    def wrong_index(self):  # функция, выводящая ошибку, если вышли за границу песни
         self.wrong_ind.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
         self.wrong_ind.setStyleSheet("background-color:rgb(255, 68, 68)")
         self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
