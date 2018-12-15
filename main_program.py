@@ -16,7 +16,7 @@ class MyFirstProgram(QWidget):
 
         self.on_the_edge = False
 
-        self.setGeometry(300, 300, 900, 900)  # создаю поле программы
+        self.setGeometry(300, 300, 800, 400)  # создаю поле программы
         self.setWindowTitle('Музыкальный редактор')
 
         self.btn = QPushButton('Обрезать по краям или то, что внутри', self)  # создается кнопка, с помощью которой
