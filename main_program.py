@@ -86,12 +86,49 @@ class MyFirstProgram(QWidget):
         self.wrong_start = QLabel(self)
         self.wrong_start.setStyleSheet("color:rgb(246, 246, 246)")
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
-        self.wrong_start.move(400, 60)
+        self.wrong_start.move(40, 250)
 
         self.wrong_ind = QLabel(self)
         self.wrong_ind.setStyleSheet("color:rgb(246, 246, 246)")
         self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные.')
-        self.wrong_ind.move(400, 60)
+        self.wrong_ind.move(445, 250)
+
+        self.save_music = QPushButton('Сохранить изменения', self)
+        self.save_music.move(500, 290)
+        self.save_music.clicked.connect(self.save)
+
+        self.m_middle = QLabel(self)
+        self.m_middle.setText('Сохранить песню. Путь до песни с ее названием')
+        self.m_middle.move(40, 290)
+
+        self.mus_save = QLineEdit(self)
+        self.mus_save.move(340, 290)
+
+        self.change_temp = QPushButton('Изменить темп', self)
+        self.change_temp.move(510, 260)
+        self.change_temp.clicked.connect(self.temp_change)
+
+        self.change_label = QLabel(self)
+        self.change_label.setText('На сколько процентов быстрее надо сделать музыку')
+        self.change_label.move(40, 260)
+
+        self.change_Edit = QLineEdit(self)
+        self.change_Edit.move(360, 260)
+
+    def temp_change(self):
+        try:
+            change_t = int(self.change_Edit.text())
+        except ValueError:
+            self.wrong_start_or_end()
+        except TypeError:
+            self.wrong_start_or_end()
+
+    def save(self):
+        try:
+            file_name = self.mus_save.text()
+            self.song.export(file_name, format='mp3')
+        except Exception:
+            self.wrong_f()
 
     def change(self):  # эта функция меняет то, что я буду удалять.
         self.on_the_edge = True if not self.on_the_edge else False
@@ -107,8 +144,6 @@ class MyFirstProgram(QWidget):
     def music(self):  # воспроизведение музыки
         try:
             if self.song == 0:
-                self.wrong_index()
-                self.wrong_start_or_end()
                 file_name = self.file_input.text()
                 self.song = AudioSegment.from_mp3(file_name)
                 self.end = len(self.song)
@@ -146,17 +181,21 @@ class MyFirstProgram(QWidget):
             if self.sender().text() == 'Играть':
                 self.start = int(self.m_input.text()) * 1000
                 self.end = int(self.mus_input.text()) * 1000
-                self.song = song[self.start:self.end]
-                return self.song
+                if self.start > self.end:
+                    raise ValueError
+                song = song[self.start:self.end]
+                return song
 
             self.start = int(self.start_input.text()) * 1000
             self.end = int(self.end_input.text()) * 1000
 
             if self.on_the_edge:
-                song = song[self.start:self.end]
+                if self.start > self.end:
+                    raise ValueError
+                self.song = song[self.start:self.end]
             else:
-                song = song[:self.start] + song[self.end:]
-            return song
+                self.song = song[:self.start] + song[self.end:]
+            return self.song
         except ValueError:
             self.wrong_start_or_end()
         except TypeError:
@@ -168,7 +207,7 @@ class MyFirstProgram(QWidget):
         self.wrong_start.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
         self.wrong_start.setStyleSheet("background-color:rgb(255, 68, 68)")
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
-        self.wrong_start.move(40, 255)
+        self.wrong_start.move(40, 235)
 
         loop = QEventLoop()  # создается задержка
         QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
@@ -176,13 +215,13 @@ class MyFirstProgram(QWidget):
 
         self.wrong_start.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
         self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
-        self.wrong_start.move(40, 255)
+        self.wrong_start.move(40, 235)
 
     def wrong_index(self):
         self.wrong_ind.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
         self.wrong_ind.setStyleSheet("background-color:rgb(255, 68, 68)")
         self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
-        self.wrong_ind.move(445, 255)
+        self.wrong_ind.move(445, 235)
 
         loop = QEventLoop()  # создается задержка
         QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
@@ -190,7 +229,7 @@ class MyFirstProgram(QWidget):
 
         self.wrong_ind.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
         self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
-        self.wrong_ind.move(445, 255)
+        self.wrong_ind.move(445, 235)
 
 
 if __name__ == '__main__':
