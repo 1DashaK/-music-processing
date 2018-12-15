@@ -116,6 +116,48 @@ class MyFirstProgram(QWidget):
         self.change_Edit = QLineEdit(self)
         self.change_Edit.move(360, 260)
 
+    def wrong_f(self):  # Функция, которая заставляет появляться строчку, в случае, если файл введен неверно
+        self.wrong_file.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
+        self.wrong_file.setStyleSheet("background-color:rgb(255, 68, 68)")
+        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
+        self.wrong_file.move(400, 60)
+
+        loop = QEventLoop()  # создается задержка
+        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
+        loop.exec()
+
+        self.wrong_file.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
+        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
+        self.wrong_file.move(400, 60)
+
+    def wrong_start_or_end(self):  # функция, выводящая ошибку, если что-то не так с секундами
+        self.wrong_start.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
+        self.wrong_start.setStyleSheet("background-color:rgb(255, 68, 68)")
+        self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
+        self.wrong_start.move(40, 235)
+
+        loop = QEventLoop()  # создается задержка
+        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
+        loop.exec()
+
+        self.wrong_start.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
+        self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
+        self.wrong_start.move(40, 235)
+
+    def wrong_index(self):  # функция, выводящая ошибку, если вышли за границу песни
+        self.wrong_ind.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
+        self.wrong_ind.setStyleSheet("background-color:rgb(255, 68, 68)")
+        self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
+        self.wrong_ind.move(445, 235)
+
+        loop = QEventLoop()  # создается задержка
+        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
+        loop.exec()
+
+        self.wrong_ind.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
+        self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
+        self.wrong_ind.move(445, 235)
+
     def temp_change(self):
         try:
             speed = int(self.change_Edit.text())
@@ -172,23 +214,8 @@ class MyFirstProgram(QWidget):
         except Exception:
             self.wrong_f()
 
-    def wrong_f(self):  # Функция, которая заставляет появляться строчку, в случае, если файл введен неверно
-        self.wrong_file.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
-        self.wrong_file.setStyleSheet("background-color:rgb(255, 68, 68)")
-        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
-        self.wrong_file.move(400, 60)
-
-        loop = QEventLoop()  # создается задержка
-        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
-        loop.exec()
-
-        self.wrong_file.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
-        self.wrong_file.setText('Файл не найден или не соответствует формату. Повторите ввод')
-        self.wrong_file.move(400, 60)
-
     def cut(self, song):  # функция обрезки музыки, в соответствии заданным параметрам
         try:
-
             if self.sender().text() == 'Играть':
                 self.start = int(self.m_input.text()) * 1000
                 self.end = int(self.mus_input.text()) * 1000
@@ -213,34 +240,6 @@ class MyFirstProgram(QWidget):
             self.wrong_start_or_end()
         except IndexError:
             self.wrong_index()
-
-    def wrong_start_or_end(self):  # функция, выводящая ошибку, если что-то не так с секундами
-        self.wrong_start.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
-        self.wrong_start.setStyleSheet("background-color:rgb(255, 68, 68)")
-        self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
-        self.wrong_start.move(40, 235)
-
-        loop = QEventLoop()  # создается задержка
-        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
-        loop.exec()
-
-        self.wrong_start.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
-        self.wrong_start.setText('Введеные Вами данные не соответствуют формату. Повторите ввод')
-        self.wrong_start.move(40, 235)
-
-    def wrong_index(self):  # функция, выводящая ошибку, если вышли за границу песни
-        self.wrong_ind.setStyleSheet("color:rgb(0, 0, 0)")  # строчка становится видна
-        self.wrong_ind.setStyleSheet("background-color:rgb(255, 68, 68)")
-        self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
-        self.wrong_ind.move(445, 235)
-
-        loop = QEventLoop()  # создается задержка
-        QTimer.singleShot(3000, loop.quit)  # первый параметр - время задержки, указывается в милисек.
-        loop.exec()
-
-        self.wrong_ind.setStyleSheet("color:rgb(246, 246, 246)")  # строчка перестает быть видна
-        self.wrong_ind.setText('Вы вышли за границу песни. Проверьте введенные вами данные. Повторите ввод')
-        self.wrong_ind.move(445, 235)
 
 
 if __name__ == '__main__':
